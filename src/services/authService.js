@@ -1,9 +1,16 @@
-import axiosInstance from '../configs/axios';
+import api from '../configs/axios';
+import { appendToFormData } from '../helpers/form';
 
-const authService = {
-  googleLogin: (tokenId) => {
-    return axiosInstance.post('auth/google', { token: tokenId });
-  },
+const basePath = "auth";
+
+export const auth = (options) => {
+  const formData = new FormData();
+
+  for (let key in options) {
+    if (options.hasOwnProperty(key)) {
+      appendToFormData(formData, key, options[key]);
+    }
+  }
+
+  return api.post(`${basePath}/google`, formData);
 };
-
-export default authService;

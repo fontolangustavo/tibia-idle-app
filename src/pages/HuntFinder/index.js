@@ -1,8 +1,45 @@
-import React from 'react';
-import { Container, Grid, TextField, Button, MenuItem, Select, InputLabel, FormControl, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Container, Grid, TextField, Button, MenuItem, Select, InputLabel, FormControl, Typography, Stack } from '@mui/material';
 import HuntCard from './HuntCard';
+import { dungeonService } from '../../services';
+import HuntCardSkeleton from './HuntCard/skeleton';
 
 function HuntFinder() {
+  const [isLoading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 20,
+    total: 0,
+  });
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetchGetAll(true);
+  }, [])
+
+  const fetchGetAll = (init = false) => {
+    setLoading(true);
+
+    let data = {
+      page: init ? 1 : pagination.current,
+      limit: pagination.pageSize,
+    };
+
+    dungeonService.getAll(data)
+      .then((response) => {
+        setLoading(false)
+        setPagination({
+          ...pagination,
+          current: response.data.pageable.pageNumber,
+          total: response.data.pageable.pageSize,
+        })
+        setData(response.data.content);
+      })
+      .catch((data) => {
+        setLoading(false)
+      });
+  };
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
@@ -37,22 +74,43 @@ function HuntFinder() {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" fullWidth>
+          <Button
+            fullWidth
+            loading={isLoading}
+            variant="contained"
+            onClick={() => fetchGetAll(true)}
+          >
             Search
           </Button>
         </Grid>
       </Grid>
       <Grid container spacing={2} marginTop={2}>
-        {/* Example Hunt Cards */}
-        <Grid item xs={12} md={4}>
-          <HuntCard />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HuntCard />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <HuntCard />
-        </Grid>
+        {
+          isLoading && (
+            <Stack direction="row" spacing={2}>
+              {[1, 2, 3].map(() => <HuntCardSkeleton />)}
+            </Stack>
+          )
+        }
+        {
+          !isLoading && data.map((item) => {
+            return (
+              <Grid item xs={12} md={4}>
+                <HuntCard
+                  id={item.id}
+                  title={item.title}
+                  image={item.image}
+                  minLevel={item.minLevel}
+                  maxLevel={item.maxLevel}
+                  minProfitPerHour={item.minProfitPerHour}
+                  maxProfitPerHour={item.maxProfitPerHour}
+                  minXpPerHour={item.minXpPerHour}
+                  maxXpPerHour={item.maxXpPerHour}
+                />
+              </Grid>
+            )
+          })
+        }
       </Grid>
     </Container>
   );

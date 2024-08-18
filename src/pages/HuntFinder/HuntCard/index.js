@@ -1,28 +1,35 @@
 import React from 'react';
-import { Card, CardContent, Typography, CardMedia } from '@mui/material';
+import { Card, CardContent, Typography, CardMedia, } from '@mui/material';
 
-function HuntCard() {
+function HuntCard({
+  id,
+  title,
+  image,
+  minLevel,
+  maxLevel,
+  minProfitPerHour,
+  maxProfitPerHour,
+  minXpPerHour,
+  maxXpPerHour
+}) {
   return (
     <Card>
       <CardMedia
         component="img"
         height="140"
-        image="https://via.placeholder.com/150"
+        image={image}
         alt="hunt image"
       />
       <CardContent>
-        <Typography variant="h5">Mistrock</Typography>
+        <Typography variant="h5">{title}</Typography>
         <Typography variant="body2" color="text.secondary">
-          Knights • Cyclops + Stealth ring
+          Level: {`${minLevel} até ${maxLevel}`}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Level: 8 até 50
+          XP/H Bruto: {`${minXpPerHour}K até ${maxXpPerHour}K`}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          XP/H Bruto: 50k até 80k
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Lucro/H: -9k até -4k
+          Lucro/H: {`${minProfitPerHour}K até ${maxProfitPerHour}K`}
         </Typography>
       </CardContent>
     </Card>
