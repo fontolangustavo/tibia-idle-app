@@ -26,3 +26,6 @@ export const getAll = (options) => {
   return api.get(`${basePath}${params_qs}`);
 };
 
+export const enterDungeon = (dungeonId, playerId) => {
+  return api.post(`${basePath}/${dungeonId}`, { playerId });
+};

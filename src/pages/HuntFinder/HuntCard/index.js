@@ -1,7 +1,10 @@
 import React from 'react';
-import { Card, CardContent, Typography, CardMedia, } from '@mui/material';
+import { Card, CardContent, Typography, CardMedia, CardActions, Button, } from '@mui/material';
+import { observer } from 'mobx-react-lite';
 
-function HuntCard({
+import { useStores } from '../../../stores';
+
+const HuntCard = observer(({
   id,
   title,
   image,
@@ -10,8 +13,17 @@ function HuntCard({
   minProfitPerHour,
   maxProfitPerHour,
   minXpPerHour,
-  maxXpPerHour
-}) {
+  maxXpPerHour,
+  handleEnterDungeon
+}) => {
+  const { userStore } = useStores();
+
+  const disabledButton = !userStore.user || !userStore.selectedPlayer;
+
+  const onClick = () => {
+    handleEnterDungeon(id)
+  }
+
   return (
     <Card>
       <CardMedia
@@ -32,8 +44,18 @@ function HuntCard({
           Lucro/H: {`${minProfitPerHour}K até ${maxProfitPerHour}K`}
         </Typography>
       </CardContent>
+      <CardActions>
+        <Button
+          size="small"
+          color="success"
+          disabled={disabledButton}
+          onClick={onClick}
+        >
+          Entrar
+        </Button>
+      </CardActions>
     </Card>
   );
-}
+});
 
 export default HuntCard;

@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Grid, TextField, Button, MenuItem, Select, InputLabel, FormControl, Typography, Stack } from '@mui/material';
+import { observer } from 'mobx-react-lite';
+
+import { useStores } from '../../stores';
+import { dungeonService, huntService } from '../../services';
 import HuntCard from './HuntCard';
-import { dungeonService } from '../../services';
 import HuntCardSkeleton from './HuntCard/skeleton';
 
-function HuntFinder() {
+const HuntFinder = observer(() => {
+  const { userStore } = useStores();
+
   const [isLoading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     current: 1,
@@ -38,6 +43,23 @@ function HuntFinder() {
       .catch((data) => {
         setLoading(false)
       });
+  };
+
+  const handleEnterDungeon = async dungeonId => {
+    // setLoading(true);
+
+    try {
+      await huntService.enterDungeon({
+        dungeonId,
+        playerId: userStore.selectedPlayer
+      });
+
+      console.log('Entrou na dungeon com sucesso');
+    } catch (error) {
+      console.error('Erro ao entrar na dungeon:', error);
+    } finally {
+      // setLoading(false);
+    }
   };
 
   return (
@@ -106,6 +128,7 @@ function HuntFinder() {
                   maxProfitPerHour={item.maxProfitPerHour}
                   minXpPerHour={item.minXpPerHour}
                   maxXpPerHour={item.maxXpPerHour}
+                  handleEnterDungeon={handleEnterDungeon}
                 />
               </Grid>
             )
@@ -114,6 +137,6 @@ function HuntFinder() {
       </Grid>
     </Container>
   );
-}
+});
 
 export default HuntFinder;
